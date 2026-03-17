@@ -10,6 +10,7 @@ mcp = FastMCP("My First Server")
 def calculate_dog_years(human_years: int) -> str:
     """Calculate how old a dog is in dog years. (1 human year = 7 dog years)"""
     dog_years = human_years * 7
+    print("Dog years calculated:", dog_years)
     return f"A dog that is {human_years} human years old is {dog_years} in dog years!"
 
 # 3. Finally, start the server!
