@@ -1,0 +1,94 @@
+[33mcommit 4fe65ddfb857a23bb36b6b0deffdc70d55be69e1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Chetan <chetankiran9666@gmail.com>
+Date:   Tue Mar 17 23:05:24 2026 +0530
+
+    use groq to intract with ai
+
+[1mdiff --git a/ai/groq_client.py b/ai/groq_client.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..be78c71[m
+[1m--- /dev/null[m
+[1m+++ b/ai/groq_client.py[m
+[36m@@ -0,0 +1,81 @@[m
+[32m+[m[32mfrom dotenv import load_dotenv[m
+[32m+[m[32mfrom groq import Groq[m
+[32m+[m[32mimport os[m
+[32m+[m
+[32m+[m[32mload_dotenv()[m
+[32m+[m
+[32m+[m[32mclient = Groq(api_key=os.getenv("GROQ_API_KEY"))[m
+[32m+[m
+[32m+[m[32mdef analyze_codebase_structure(structure: str, code: str):[m
+[32m+[m
+[32m+[m[32m    prompt = f"""[m
+[32m+[m[32mYou are a senior software architect.[m
+[32m+[m
+[32m+[m[32mAnalyze the following repository.[m
+[32m+[m
+[32m+[m[32mIMPORTANT RULES:[m
+[32m+[m[32m- Only use the information given[m
+[32m+[m[32m- Do not guess technologies[m
+[32m+[m[32m- If unsure, say "not enough information"[m
+[32m+[m
+[32m+[m[32mREPOSITORY STRUCTURE[m
+[32m+[m[32m{structure}[m
+[32m+[m
+[32m+[m[32mCODE SNIPPETS[m
+[32m+[m[32m{code}[m
+[32m+[m
+[32m+[m[32mExplain:[m
+[32m+[m
+[32m+[m[32m1. What the project likely does[m
+[32m+[m[32m2. Architecture[m
+[32m+[m[32m3. Technologies used[m
+[32m+[m[32m4. Main components[m
+[32m+[m[32m"""[m
+[32m+[m
+[32m+[m[32m    response = client.chat.completions.create([m
+[32m+[m[32m        model="llama-3.1-8b-instant",[m
+[32m+[m[32m        messages=[{"role": "user", "content": prompt}],[m
+[32m+[m[32m        temperature=0.2[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m[32m    return response.choices[0].message.content[m
+[32m+[m
+[32m+[m[32mdef ask_question_about_repo(context: str):[m
+[32m+[m
+[32m+[m[32m    response = client.chat.completions.create([m
+[32m+[m[32m        model="llama-3.1-8b-instant",[m
+[32m+[m[32m        messages=[{"role": "user", "content": context}],[m
+[32m+[m[32m        temperature=0.2[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m[32m    return response.choices[0].message.content[m
+[32m+[m
+[32m+[m[32mdef summarize_commits(commits: str):[m
+[32m+[m
+[32m+[m[32m    if not commits:[m
+[32m+[m[32m        return "No commits to summarize"[m
+[32m+[m
+[32m+[m[32m    try:[m
+[32m+[m[32m        prompt = f"""[m
+[32m+[m[32mYou are a senior software engineer.[m
+[32m+[m
+[32m+[m[32mAnalyze these git commits and summarize:[m
+[32m+[m
+[32m+[m[32m- What kind of project this is[m
+[32m+[m[32m- What work has been done[m
+[32m+[m[32m- Development stage (early / mid / mature)[m
+[32m+[m
+[32m+[m[32mCOMMITS:[m
+[32m+[m[32m{commits}[m
+[32m+[m[32m"""[m
+[32m+[m
+[32m+[m[32m        response = client.chat.completions.create([m
+[32m+[m[32m            model="llama-3.1-8b-instant",[m
+[32m+[m[32m            messages=[{"role": "user", "content": prompt}],[m
+[32m+[m[32m            temperature=0.3[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m        return response.choices[0].message.content[m
+[32m+[m
+[32m+[m[32m    except Exception as e:[m
+[32m+[m[32m        return f"AI Error: {str(e)}"[m
+\ No newline at end of file[m
