@@ -1,1 +1,1 @@
-"def greet(): return 'Hi'" 
+"def greet(): return None" 
