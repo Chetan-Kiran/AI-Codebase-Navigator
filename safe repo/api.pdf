@@ -3,7 +3,7 @@ import json
 import shutil
 from fastapi import APIRouter
 
-from mcp_core.mcp_router2 import mcp_router2
+from mcp_core import mcp_router2
 
 from ai.groq_client import analyze_codebase_structure
 from ai.groq_client import ask_question_about_repo
@@ -144,8 +144,8 @@ def ask_repo(repo_path: str, question: str):
     answer = ask_question_about_repo(context)
 
     return {
-        "answer": answer,
-        "files_used": files
+        "files_used": files,
+        "answer": answer
     }
 
 @router.post("/chat")
@@ -468,23 +468,15 @@ Explain this file clearly:
         "explanation": answer
     }
 
-from fastapi import Query
 
 ##This is the new endpoint for MCP Router version 2, which uses AI to decide the tool and flow but not @mcp.tool()##
 @router.post("/chat-ai")
-def chat_ai(repo_path: str = Query(...), message: str = Query(...)):
+def chat_ai(repo_path: str, message: str):
     repo_path = resolve_repo_path(repo_path)
 
     result = mcp_router2(repo_path, message)
 
-    if "error" in result:
-        return {"error": result["error"], "status": "error"}
-
-    return {
-        "answer": result.get("data", "No answer"),
-        "type": result.get("type", "unknown"),
-        "files_used": result.get("files_used", [])
-    }
+    return result
 
 ##This is for manulal tool routing, not used in current code but can be adapted for future###
 # @router.post("/chat-ai")

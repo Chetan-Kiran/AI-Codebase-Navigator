@@ -29,17 +29,21 @@ def read_repository_code(repo_path: str, max_total_chars: int = 4000):
 
     return "\n".join(code_data)
 
-def read_specific_files(file_paths, max_chars=1500):
-    data = []
+def read_specific_files(files):
+    code = ""
 
-    for path in file_paths:
+    for file in files:
+
+        # 🔥 SAFETY FIX
+        if isinstance(file, (tuple, list)):
+            file = file[0]
+
         try:
-            with open(path, "r", encoding="utf-8") as f:
-                content = f.read(max_chars)
+            with open(file, "r", encoding="utf-8", errors="ignore") as f:
+                code += f"\n\nFILE: {file}\n"
+                code += f.read()
 
-            data.append(f"\nFILE: {path}\n{content}\n------")
+        except Exception as e:
+            print(f"Error reading {file}: {e}")
 
-        except:
-            pass
-
-    return "\n".join(data)
+    return code

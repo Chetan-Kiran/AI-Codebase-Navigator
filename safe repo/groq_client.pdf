@@ -201,17 +201,16 @@ def groq_chat(messages, tools=None):
     )
 
 def decide_tool(User_message):
-    prompt = f"""
-    Analyze the user request: "{User_message}"
-    
-    RULES:
-    1. If the user asks about a specific function, variable, or "how this works" -> return 'repo_qa'.
-    2. If the user asks "what's the risk" or "is this safe" -> return 'risk_analysis'.
-    3. If the user asks for a history or summary of changes -> return 'commit_summary'.
-    4. ONLY return the tool name. No sentences.
-    
-    Available tools: risk_analysis, commit_summary, diff_analysis, bug_origin, repo_qa.
+    prompt = f"""YOU are a tool selector for a coding assistant AI.
+    user message:
+    {User_message}
+    Available tools:
+    - risk_analysis -> for bug bugs/errors
+    - commit_summary -> for commit history
+    - diff_analysis -> for change/diff
+    - bug_origin -> for finding bugwhich introduced a bug
+    - repo_qa -> for general questions about the codebase
+
+    Decide which tool to use. Only return the tool name.
     """
-    messages = [{"role": "user", "content": prompt}]
-    response = groq_chat(messages)
-    return response.choices[0].message.content.strip()
+    return groq_chat(prompt).strip()
