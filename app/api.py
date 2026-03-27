@@ -481,8 +481,8 @@ def chat_ai(repo_path: str = Query(...), message: str = Query(...)):
         return {"error": result["error"], "status": "error"}
 
     return {
-        "answer": result.get("data", "No answer"),
         "type": result.get("type", "unknown"),
+        "answer": result.get("data", "No answer"),
         "files_used": result.get("files_used", [])
     }
 

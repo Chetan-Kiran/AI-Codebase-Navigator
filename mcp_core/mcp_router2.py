@@ -2,51 +2,44 @@ from tool_registry import Tools
 from ai.groq_client import decide_tool
 
 def mcp_router2(repo_path, user_message):
-    # 1. NEW: Detection logic for UI-triggered "Explain" requests
-    # This prevents the AI from incorrectly choosing 'risk_analysis' for code snippets
-    is_selection_request = (
-        "Explain this selected code" in user_message or 
-        "Explain this specific" in user_message or
-        "Explain this file" in user_message
-    )
+    message = user_message.lower()
 
-    if is_selection_request:
+    # ✅ UI-trigger detection (VERY IMPORTANT)
+    if any(x in message for x in [
+        "selected code",
+        "this file",
+        "this function",
+        "explain this"
+    ]):
         tool_name = "repo_qa"
     else:
-        # Ask the AI only for general chat questions
-        raw_decision = decide_tool(user_message).lower().strip()
-        
-        # 2. Robust mapping to handle AI chatter (e.g., "I choose risk_analysis")
-        if "risk" in raw_decision: tool_name = "risk_analysis"
-        elif "summary" in raw_decision: tool_name = "commit_summary"
-        elif "diff" in raw_decision: tool_name = "diff_analysis"
-        elif "bug" in raw_decision: tool_name = "bug_origin"
-        else: tool_name = "repo_qa"
+        tool_name = decide_tool(user_message)
 
-    print(f"DEBUG: Final Decision -> {tool_name}")
+    print(f"DEBUG: Tool Selected -> {tool_name}")
 
-    # 3. Get the tool from registry
-    tool = Tools.get(tool_name)
-
-    if not tool:
-        # Fallback to repo_qa if the specific tool is missing
-        tool = Tools.get("repo_qa")
-        tool_name = "repo_qa"
+    tool = Tools.get(tool_name, Tools["repo_qa"])
 
     try:
-        # 4. Execute tool
+        # ✅ EXECUTION
         if tool_name == "repo_qa":
             result = tool(repo_path, user_message)
         else:
             result = tool(repo_path)
-            
-        if result is None:
-            return {"type": "error", "data": f"Tool '{tool_name}' returned no data."}
+
+        # ✅ HANDLE EMPTY RESULTS
+        if not result or str(result).strip() == "":
+            return {
+                "type": tool_name,
+                "data": "No meaningful data found for this request."
+            }
 
     except Exception as e:
-        print(f"Tool Execution Error: {e}")
-        return {"type": "error", "data": f"Failed to run {tool_name}: {str(e)}"}
-    
+        print("ERROR:", e)
+        return {
+            "type": "error",
+            "data": f"{tool_name} failed: {str(e)}"
+        }
+
     return {
         "type": tool_name,
         "data": result

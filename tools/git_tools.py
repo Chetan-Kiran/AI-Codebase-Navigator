@@ -103,8 +103,12 @@ def git_diff_commit(repo_path, commit_id):
         ["git", "show", commit_id]
     )
 
-def clone_repo(repo_url):
+def clone_repo(repo_url: str):
+
     CLONE_DIR = "cloned_repos"
+
+    repo_name = repo_url.split("/")[-1].replace(".git", "").strip()
+    repo_path = os.path.join(CLONE_DIR, repo_name)
 
     try:
         if not os.path.exists(CLONE_DIR):
@@ -114,6 +118,7 @@ def clone_repo(repo_url):
         local_path = os.path.join(CLONE_DIR, repo_name)
 
         if os.path.exists(local_path):
+            subprocess.run(["git", "-C", repo_path, "pull"], check=True)
             return local_path
 
         subprocess.run(

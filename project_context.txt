@@ -1,0 +1,132 @@
+# PROJECT CONTEXT (READ THIS CAREFULLY BEFORE ANSWERING)
+
+You are helping me build an AI-powered Codebase Navigator (full-stack project).
+
+## 🧠 PROJECT OVERVIEW
+
+This is a developer tool where:
+
+* User gives a GitHub repo or local folder
+* App clones or loads repo
+* Displays file tree, code viewer, commit timeline
+* AI explains code, diffs, commits, and answers questions
+
+---
+
+## ⚙️ TECH STACK
+
+### Frontend:
+
+* React (Vite)
+* TailwindCSS
+* Axios
+* react-syntax-highlighter (code view)
+* react-diff-viewer-continued (diff view)
+* ReactMarkdown
+
+### Backend:
+
+* FastAPI (Python)
+* Uvicorn server
+* Groq API (LLM)
+* Git CLI (subprocess)
+
+---
+
+## 📁 IMPORTANT BACKEND STRUCTURE
+
+backend/
+│
+├── app/
+│   ├── main.py (FastAPI app entry)
+│   ├── api.py (routes like /chat-ai, /read-file, /analyze-structure)
+│
+├── tools/
+│   ├── git_tools.py (git_log, git_diff, commit_detail)
+│   ├── read_files.py (read_specific_files, read_repository_code)
+│   ├── search_files.py (find_relevant_files)
+│   ├── git_clone.py (clone_repo with caching)
+│
+├── ai/
+│   ├── groq_client.py (all AI calls)
+│
+├── mcp_core/
+│   ├── router.py (mcp_router function – decides which tool to use)
+│   ├── bug_finder.py
+
+---
+
+## 🧠 CURRENT ARCHITECTURE
+
+Frontend → FastAPI (/chat-ai)
+→ mcp_router(repo_path, message)
+→ calls tools (git, file, ai)
+→ returns structured response
+
+---
+
+## 🔥 MCP (IMPORTANT CLARIFICATION)
+
+I am NOT using external MCP server.
+
+My MCP = internal tool selection system:
+
+* mcp_router() decides which function to call
+* NOT using @tool decorator or FastMCP server
+
+---
+
+## ⚡ EXISTING FEATURES
+
+* Repo cloning with cache
+* File explorer (tree view)
+* Code viewer (left)
+* AI explanation (right)
+* Commit timeline
+* Diff viewer (GitHub style)
+
+---
+
+## ❗ CURRENT PROBLEMS / FOCUS
+
+* Improve UI layout (compact, no empty space)
+* Improve file path handling (nested folders fixed)
+* Add caching (repo + AI + file reads)
+* Add feature: highlight code → explain
+* Add feature: click function → jump + explain
+
+---
+
+## 🎯 HOW YOU SHOULD RESPOND
+
+* DO NOT change project structure randomly
+* USE my existing function names where possible
+* KEEP solutions simple and practical
+* GIVE exact code (not theory)
+* EXPLAIN where to place code (file paths)
+
+---
+
+## 📌 EXAMPLE FUNCTIONS (IMPORTANT)
+
+* mcp_router(repo_path, message)
+* ask_question_about_repo(context)
+* analyze_diff(diff)
+* analyze_commit_risk(commit_data)
+* find_relevant_files(repo_path, query)
+* read_specific_files(files)
+
+---
+
+## 🧠 WHAT I EXPECT FROM YOU
+
+When I ask something:
+
+* Understand my architecture first
+* Suggest minimal changes
+* Maintain compatibility
+* Help me scale features step-by-step
+
+---
+
+# NOW ANSWER MY QUESTION:

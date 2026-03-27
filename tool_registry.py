@@ -27,17 +27,29 @@ def risk_analysis_tool(repo_path: str) -> str:
 # @mcp.tool()
 def commit_summary_tool(repo_path: str) -> str:
     commits = git_log(repo_path, limit=5)
+
+    if not commits.strip():
+        return "No commits found to summarize."
+    
     return summarize_commits(commits[:2000])
 
 
 # @mcp.tool()
 def diff_analysis_tool(repo_path: str) -> str:
     diff = git_diff(repo_path)
+
+    if not diff.strip():
+        return "No differences found in the latest commit."
+    
     return analyze_diff(diff[:2000])
 
 
 # @mcp.tool()
 def bug_origin_tool(repo_path: str) -> str:
+
+    if not git_log(repo_path, limit=1).strip():
+        return "No commits found to analyze for bugs."
+    
     return find_bug_introducing_commit(repo_path)
 
 
@@ -52,14 +64,17 @@ def repo_qa_tool(repo_path: str, question: str) -> str:
         code = read_specific_files(files)[:4000]
 
     context = f"""
-You are an expert coding assistant.
+You are a senior software engineer.
+
+Explain clearly and concisely.
 
 CODE:
 {code}
 
-USER:
+QUESTION:
 {question}
 """
+
     return ask_question_about_repo(context)
 
 # if __name__ == "__main__":

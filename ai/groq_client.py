@@ -2,6 +2,13 @@ from dotenv import load_dotenv
 from groq import Groq
 import os
 
+# from tool_registry import repo_qa_tool
+# from tool_registry import bug_origin_tool
+# from tool_registry import diff_analysis_tool
+# from tool_registry import risk_analysis_tool 
+# from tool_registry import commit_summary_tool
+
+
 load_dotenv()
 
 # Lazy initialization of client
@@ -200,18 +207,32 @@ def groq_chat(messages, tools=None):
         tools = tools
     )
 
-def decide_tool(User_message):
+def decide_tool(user_message: str) -> str:
     prompt = f"""
-    Analyze the user request: "{User_message}"
-    
-    RULES:
-    1. If the user asks about a specific function, variable, or "how this works" -> return 'repo_qa'.
-    2. If the user asks "what's the risk" or "is this safe" -> return 'risk_analysis'.
-    3. If the user asks for a history or summary of changes -> return 'commit_summary'.
-    4. ONLY return the tool name. No sentences.
-    
-    Available tools: risk_analysis, commit_summary, diff_analysis, bug_origin, repo_qa.
-    """
-    messages = [{"role": "user", "content": prompt}]
-    response = groq_chat(messages)
-    return response.choices[0].message.content.strip()
+You are a strict tool selector.
+
+User message:
+"{user_message}"
+
+Return ONLY one JSON:
+{{"tool": "<tool_name>"}}
+
+Rules:
+- Explain code / function / file → repo_qa
+- Bugs / errors → bug_origin
+- Risk / safety → risk_analysis
+- Commits / history → commit_summary
+- Changes / diff → diff_analysis
+
+Tools:
+risk_analysis, commit_summary, diff_analysis, bug_origin, repo_qa
+"""
+
+    response = groq_chat([{"role": "user", "content": prompt}])
+
+    try:
+        import json
+        content = response.choices[0].message.content.strip()
+        return json.loads(content)["tool"]
+    except:
+        return "repo_qa"  # fallback

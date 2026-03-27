@@ -1,0 +1,120 @@
+PROJECT CONTEXT:
+
+I am building an AI-powered Codebase Navigator.
+
+Tech Stack:
+
+* Frontend: React (Vite) + Tailwind
+* Backend: FastAPI (Python)
+* AI: Groq API (LLM)
+* Git integration for repo analysis
+
+Project Structure:
+
+FRONTEND:
+
+* components/
+
+  * CodeViewer.jsx (shows file content)
+  * FileExplorer.jsx (tree view of repo)
+  * CommitDiff.jsx (diff viewer)
+  * DiffViewer.jsx
+  * Timeline.jsx
+* pages/
+
+  * Dashboard.jsx (main UI)
+* services/
+
+  * api.js (all API calls)
+
+BACKEND:
+
+* app/api.py → FastAPI routes
+* tools/
+
+  * git_tools.py → git operations (log, diff, commits)
+  * read_files.py → read file content
+  * search_files.py → find relevant files
+  * list_files.py → repo structure
+* ai/
+
+  * groq_client.py → all AI calls
+* mcp_core/
+
+  * router.py → tool selector (currently IF-ELSE based)
+  * bug_finder.py
+
+CURRENT SYSTEM DESIGN:
+
+Frontend → calls FastAPI `/chat-ai`
+Backend:
+
+1. Receives repo_path + message
+2. Calls mcp_router(repo_path, message)
+3. Router selects tool:
+
+   * git_log
+   * git_diff
+   * repo QA (RAG)
+   * bug finder
+4. Tools fetch data
+5. AI (Groq) processes result
+6. Response returned to frontend
+
+IMPORTANT PROBLEMS I FACED:
+
+* File path issues (subfolders like src/components not resolving)
+* AI not reading correct files
+* MCP implementation confusion (tool decorators vs simple router)
+* Import errors (mcp, groq, module paths)
+* UI spacing issues
+* Diff viewer fixed
+* Code viewer now working
+
+CURRENT STATE:
+
+* Working system WITHOUT real MCP
+* Using manual IF-ELSE router
+* AI selects logic via backend
+
+GOALS:
+
+SHORT TERM:
+
+1. Fix file path handling for nested folders
+2. Improve UI (clean layout, spacing)
+3. Add:
+
+   * highlight selected code → explain
+   * click function → jump + explain
+
+MID TERM:
+4. Add caching (avoid re-cloning repos)
+5. Support local folder input
+6. Optimize performance
+
+LONG TERM:
+7. Convert IF-ELSE router → real MCP tool system
+8. Add advanced features:
+
+* bug detection
+* commit risk analysis
+* smart code navigation
+
+IMPORTANT RULES FOR YOU (AI):
+
+* DO NOT change my architecture randomly
+* KEEP my function names consistent
+* ALWAYS explain where to change code (file + line area)
+* GIVE step-by-step implementation
+* THINK like a senior engineer guiding a junior
+* AVOID vague answers
+
+WHEN I ASK QUESTIONS:
+
+* Assume full context of this project
+* Suggest minimal but powerful changes
+* Prefer practical fixes over theory
+
+NOW HELP ME WITH:
+[ I will ask my next question here ]
